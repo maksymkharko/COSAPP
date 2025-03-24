@@ -1,0 +1,805 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Applications Grid</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            background-color: #000;
+            color: white;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 10px;
+            flex-grow: 1;
+        }
+
+        @media (max-width: 480px) {
+            .grid-container {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 10px;
+                padding: 5px;
+            }
+        }
+
+        .app-item {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.2s;
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .app-item:active {
+            transform: scale(0.95);
+        }
+
+        .app-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(145deg, #2a2a2a, #1a1a1a);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 8px;
+            font-size: 32px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .app-icon.settings-icon {
+            background: linear-gradient(145deg, #007AFF, #0056b3);
+            box-shadow: 0 4px 12px rgba(0, 122, 255, 0.3);
+        }
+
+        .app-icon.edit-icon {
+            background: linear-gradient(145deg, #34C759, #2a9e47);
+            box-shadow: 0 4px 12px rgba(52, 199, 89, 0.3);
+        }
+
+        .app-icon.add-icon {
+            background: linear-gradient(145deg, #FF9500, #FF7A00);
+            box-shadow: 0 4px 12px rgba(255, 149, 0, 0.3);
+        }
+
+        .app-icon:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .app-icon.settings-icon:hover {
+            background: linear-gradient(145deg, #0056b3, #004494);
+            box-shadow: 0 6px 16px rgba(0, 122, 255, 0.4);
+        }
+
+        .app-icon.edit-icon:hover {
+            background: linear-gradient(145deg, #2a9e47, #228b3a);
+            box-shadow: 0 6px 16px rgba(52, 199, 89, 0.4);
+        }
+
+        .app-icon.add-icon:hover {
+            background: linear-gradient(145deg, #FF7A00, #FF6A00);
+            box-shadow: 0 6px 16px rgba(255, 149, 0, 0.4);
+        }
+
+        .app-name {
+            font-size: 12px;
+            margin-top: 4px;
+            color: #fff;
+            font-weight: 500;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+        }
+
+        .delete-btn {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            width: 24px;
+            height: 24px;
+            background-color: #ff3b30;
+            border-radius: 50%;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            z-index: 2;
+        }
+
+        .app-item:hover .delete-btn {
+            display: flex;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #1c1c1e;
+            padding: 20px;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 400px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .modal-title {
+            font-size: 20px;
+            font-weight: bold;
+            color: #fff;
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            color: #fff;
+            font-size: 24px;
+            cursor: pointer;
+            padding: 5px;
+            border-radius: 50%;
+            transition: background-color 0.2s;
+        }
+
+        .close-modal:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .hidden-apps-list {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            max-height: 60vh;
+            overflow-y: auto;
+            padding-right: 5px;
+        }
+
+        .hidden-apps-list::-webkit-scrollbar {
+            width: 5px;
+        }
+
+        .hidden-apps-list::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 5px;
+        }
+
+        .hidden-apps-list::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 5px;
+        }
+
+        .restore-btn {
+            background-color: #007AFF;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 12px;
+            cursor: pointer;
+            margin-top: 15px;
+            font-size: 16px;
+            font-weight: 500;
+            width: 100%;
+            transition: background-color 0.2s;
+        }
+
+        .restore-btn:hover {
+            background-color: #0056b3;
+        }
+
+        .restore-btn:active {
+            transform: scale(0.98);
+        }
+
+        .icon-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 4px;
+            max-height: 70vh;
+            overflow-y: auto;
+            overflow-x: hidden;
+            padding: 4px;
+            scrollbar-width: thin;
+            scrollbar-color: rgba(255, 255, 255, 0.2) rgba(255, 255, 255, 0.1);
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .icon-item-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            box-sizing: border-box;
+            cursor: pointer;
+            padding: 1px;
+            border-radius: 4px;
+            transition: background-color 0.2s;
+        }
+
+        .icon-item {
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            color: #fff;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+        }
+
+        .icon-item.settings-icon {
+            background: linear-gradient(145deg, #007AFF, #0056b3);
+            box-shadow: 0 2px 8px rgba(0, 122, 255, 0.3);
+        }
+
+        .icon-item.edit-icon {
+            background: linear-gradient(145deg, #34C759, #2a9e47);
+            box-shadow: 0 2px 8px rgba(52, 199, 89, 0.3);
+        }
+
+        .icon-item:hover {
+            transform: translateY(-2px);
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .icon-item.settings-icon:hover {
+            background: linear-gradient(145deg, #0056b3, #004494);
+        }
+
+        .icon-item.edit-icon:hover {
+            background: linear-gradient(145deg, #2a9e47, #228b3a);
+        }
+
+        .icon-selector {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #1c1c1e;
+            padding: 6px;
+            border-radius: 6px;
+            width: 90%;
+            max-width: 280px;
+            z-index: 1001;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+            box-sizing: border-box;
+            overflow-x: hidden;
+        }
+
+        .icon-selector-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .icon-selector-title {
+            font-size: 16px;
+            font-weight: bold;
+            color: #fff;
+        }
+
+        .icon-selector-close {
+            background: none;
+            border: none;
+            color: #fff;
+            font-size: 24px;
+            cursor: pointer;
+            padding: 5px;
+            border-radius: 50%;
+            transition: background-color 0.2s;
+        }
+
+        .icon-selector-close:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .icon-category {
+            margin-bottom: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 8px;
+            border-radius: 8px;
+        }
+
+        .icon-category-title {
+            font-size: 13px;
+            color: #888;
+            margin-bottom: 10px;
+            padding-left: 5px;
+            font-weight: 500;
+        }
+
+        .color-selector {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #1c1c1e;
+            padding: 12px;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 280px;
+            z-index: 1002;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+            box-sizing: border-box;
+            display: none;
+        }
+
+        .color-selector-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .color-selector-title {
+            font-size: 16px;
+            font-weight: bold;
+            color: #fff;
+        }
+
+        .color-selector-close {
+            background: none;
+            border: none;
+            color: #fff;
+            font-size: 24px;
+            cursor: pointer;
+            padding: 5px;
+            border-radius: 50%;
+            transition: background-color 0.2s;
+        }
+
+        .color-selector-close:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .color-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+            padding: 8px;
+        }
+
+        .color-item {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: transform 0.2s;
+            border: 2px solid transparent;
+        }
+
+        .color-item:hover {
+            transform: scale(1.1);
+        }
+
+        .color-item.selected {
+            border-color: #fff;
+        }
+    </style>
+</head>
+<body>
+    <div class="grid-container" id="appGrid">
+        <!-- Apps will be dynamically added here -->
+    </div>
+
+    <div class="modal" id="hiddenAppsModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">Скрытые приложения</div>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="hidden-apps-list" id="hiddenAppsList">
+                <!-- Hidden apps will be dynamically added here -->
+            </div>
+            <button class="restore-btn" id="restoreAllBtn">Восстановить все</button>
+        </div>
+    </div>
+
+    <div class="icon-selector" id="iconSelector">
+        <div class="icon-selector-header">
+            <div class="icon-selector-title">Выберите иконку</div>
+            <button class="icon-selector-close">&times;</button>
+        </div>
+        <div class="icon-grid" id="iconGrid">
+            <!-- Icons will be dynamically added here -->
+        </div>
+    </div>
+
+    <div class="color-selector" id="colorSelector">
+        <div class="color-selector-header">
+            <div class="color-selector-title">Выберите цвет</div>
+            <button class="color-selector-close">&times;</button>
+        </div>
+        <div class="color-grid">
+            <div class="color-item" data-color="#007AFF"></div>
+            <div class="color-item" data-color="#34C759"></div>
+            <div class="color-item" data-color="#FF9500"></div>
+            <div class="color-item" data-color="#FF3B30"></div>
+            <div class="color-item" data-color="#5856D6"></div>
+            <div class="color-item" data-color="#FF2D55"></div>
+            <div class="color-item" data-color="#5AC8FA"></div>
+            <div class="color-item" data-color="#FFCC00"></div>
+            <div class="color-item" data-color="#FF9500"></div>
+            <div class="color-item" data-color="#FF3B30"></div>
+            <div class="color-item" data-color="#5856D6"></div>
+            <div class="color-item" data-color="#FF2D55"></div>
+        </div>
+    </div>
+
+    <script>
+        const iconCategories = {
+            "Основные": [
+                "fa-home", "fa-user", "fa-cog", "fa-bell", "fa-bookmark",
+                "fa-folder", "fa-file", "fa-image", "fa-video", "fa-music",
+                "fa-camera", "fa-phone", "fa-envelope", "fa-message", "fa-calendar",
+                "fa-clock", "fa-map", "fa-location-dot", "fa-weather-sunny", "fa-cloud"
+            ],
+            "Транспорт": [
+                "fa-car", "fa-truck", "fa-bus", "fa-train", "fa-plane",
+                "fa-helicopter", "fa-motorcycle", "fa-bicycle", "fa-ship", "fa-subway",
+                "fa-gas-pump", "fa-parking", "fa-route", "fa-map-marker-alt", "fa-compass"
+            ],
+            "Развлечения": [
+                "fa-gamepad", "fa-film", "fa-tv", "fa-radio", "fa-podcast",
+                "fa-spotify", "fa-youtube", "fa-music", "fa-book", "fa-palette",
+                "fa-camera", "fa-video", "fa-photo-video", "fa-microphone", "fa-headphones"
+            ],
+            "Инструменты": [
+                "fa-calculator", "fa-camera", "fa-microphone", "fa-keyboard", "fa-mouse",
+                "fa-desktop", "fa-laptop", "fa-mobile", "fa-tablet", "fa-headphones",
+                "fa-print", "fa-fax", "fa-scanner", "fa-wifi", "fa-bluetooth"
+            ],
+            "Бизнес": [
+                "fa-chart-line", "fa-chart-bar", "fa-chart-pie", "fa-wallet", "fa-credit-card",
+                "fa-money-bill", "fa-coins", "fa-building", "fa-briefcase", "fa-file-invoice",
+                "fa-file-invoice-dollar", "fa-receipt", "fa-handshake", "fa-users", "fa-user-tie"
+            ],
+            "Здоровье": [
+                "fa-heart", "fa-heart-pulse", "fa-stethoscope", "fa-pills", "fa-syringe",
+                "fa-bandage", "fa-hospital", "fa-notes-medical", "fa-user-doctor", "fa-user-nurse",
+                "fa-dumbbell", "fa-person-running", "fa-person-biking", "fa-person-swimming",
+                "fa-person-walking"
+            ],
+            "Образование": [
+                "fa-book", "fa-graduation-cap", "fa-chalkboard-teacher", "fa-pencil",
+                "fa-pen", "fa-pen-fancy", "fa-pen-nib", "fa-pen-to-square", "fa-eraser",
+                "fa-highlighter", "fa-bookmark", "fa-book-open", "fa-book-reader",
+                "fa-scroll", "fa-certificate"
+            ]
+        };
+
+        const apps = [
+            { id: 1, name: 'Мои авто', icon: '<i class="fas fa-car"></i>', url: 'app1.html' },
+            { id: 2, name: 'Закладки', icon: '<i class="fas fa-bookmark"></i>', url: 'app2.html' },
+            { id: 3, name: 'Trenk', icon: '<i class="fas fa-unlock"></i>', url: 'app3.html' },
+            { id: 4, name: 'Гогле', icon: '<i class="fas fa-link"></i>', url: 'app4.html' },
+            { id: 5, name: 'Календарь', icon: '<i class="fas fa-calendar"></i>', url: 'app5.html' },
+            { id: 6, name: 'Приложение 6', icon: '<i class="fas fa-map"></i>', url: 'app6.html' },
+            { id: 7, name: 'Приложение 7', icon: '<i class="fas fa-calendar"></i>', url: 'app7.html' },
+            { id: 8, name: 'Приложение 8', icon: '<i class="fas fa-clock"></i>', url: 'app8.html' },
+            { id: 9, name: 'Приложение 9', icon: '<i class="fas fa-phone"></i>', url: 'app9.html' },
+            { id: 10, name: 'Приложение 10', icon: '<i class="fas fa-calculator"></i>', url: 'app10.html' },
+            { id: 11, name: 'Приложение 11', icon: '<i class="fas fa-notes-medical"></i>', url: 'app11.html' },
+            { id: 12, name: 'Приложение 12', icon: '<i class="fas fa-wallet"></i>', url: 'app12.html' },
+            { id: 13, name: 'Приложение 13', icon: '<i class="fas fa-chart-line"></i>', url: 'app13.html' },
+            { id: 14, name: 'Приложение 14', icon: '<i class="fas fa-envelope"></i>', url: 'app14.html' },
+            { id: 15, name: 'Приложение 15', icon: '<i class="fas fa-phone"></i>', url: 'app15.html' },
+            { id: 16, name: 'Приложение 16', icon: '<i class="fas fa-message"></i>', url: 'app16.html' },
+            { id: 17, name: 'Приложение 17', icon: '<i class="fas fa-palette"></i>', url: 'app17.html' },
+            { id: 18, name: 'Приложение 18', icon: '<i class="fas fa-shield"></i>', url: 'app18.html' },
+            { id: 19, name: 'Приложение 19', icon: '<i class="fas fa-cloud"></i>', url: 'app19.html' },
+            { id: 20, name: 'Приложение 20', icon: '<i class="fas fa-folder"></i>', url: 'app20.html' },
+            { id: 21, name: 'Настройки', icon: '<i class="fas fa-cog"></i>', url: 'setting.html' },
+            { id: 22, name: 'Добавить', icon: '<i class="fas fa-plus"></i>', url: '#' },
+            { id: 23, name: 'Редактировать', icon: '<i class="fas fa-edit"></i>', url: '#' }
+        ];
+
+        let hiddenApps = JSON.parse(localStorage.getItem('ClownadesHIDEapp') || '[]');
+        const savedIcons = JSON.parse(localStorage.getItem('clownadesiconsafe') || '{}');
+        const savedColors = JSON.parse(localStorage.getItem('clownadeColorIcons') || '{}');
+        
+        // Применяем сохраненные иконки
+        Object.entries(savedIcons).forEach(([id, icon]) => {
+            const app = apps.find(a => a.id === parseInt(id));
+            if (app) {
+                app.icon = icon;
+            }
+        });
+
+        const appGrid = document.getElementById('appGrid');
+        const modal = document.getElementById('hiddenAppsModal');
+        const hiddenAppsList = document.getElementById('hiddenAppsList');
+        const restoreAllBtn = document.getElementById('restoreAllBtn');
+        const closeModalBtn = document.querySelector('.close-modal');
+
+        let currentEditingApp = null;
+        let isEditMode = false;
+
+        function createIconSelector() {
+            const iconGrid = document.getElementById('iconGrid');
+            iconGrid.innerHTML = '';
+
+            // Создаем массив всех иконок
+            const allIcons = [
+                "fa-home", "fa-user", "fa-cog", "fa-bell", "fa-bookmark",
+                "fa-folder", "fa-file", "fa-image", "fa-video", "fa-music",
+                "fa-camera", "fa-phone", "fa-envelope", "fa-message", "fa-calendar",
+                "fa-clock", "fa-map", "fa-location-dot", "fa-weather-sunny", "fa-cloud",
+                "fa-car", "fa-truck", "fa-bus", "fa-train", "fa-plane",
+                "fa-helicopter", "fa-motorcycle", "fa-bicycle", "fa-ship", "fa-subway",
+                "fa-gas-pump", "fa-parking", "fa-route", "fa-map-marker-alt", "fa-compass",
+                "fa-gamepad", "fa-film", "fa-tv", "fa-radio", "fa-podcast",
+                "fa-spotify", "fa-youtube", "fa-book", "fa-palette", "fa-photo-video",
+                "fa-microphone", "fa-headphones", "fa-calculator", "fa-keyboard", "fa-mouse",
+                "fa-desktop", "fa-laptop", "fa-mobile", "fa-tablet", "fa-print",
+                "fa-fax", "fa-scanner", "fa-wifi", "fa-bluetooth", "fa-chart-line",
+                "fa-chart-bar", "fa-chart-pie", "fa-wallet", "fa-credit-card", "fa-money-bill",
+                "fa-coins", "fa-building", "fa-briefcase", "fa-file-invoice", "fa-file-invoice-dollar",
+                "fa-receipt", "fa-handshake", "fa-users", "fa-user-tie", "fa-heart",
+                "fa-heart-pulse", "fa-stethoscope", "fa-pills", "fa-syringe", "fa-bandage",
+                "fa-hospital", "fa-notes-medical", "fa-user-doctor", "fa-user-nurse", "fa-dumbbell",
+                "fa-person-running", "fa-person-biking", "fa-person-swimming", "fa-person-walking",
+                "fa-graduation-cap", "fa-chalkboard-teacher", "fa-pencil", "fa-pen", "fa-pen-fancy",
+                "fa-pen-nib", "fa-pen-to-square", "fa-eraser", "fa-highlighter", "fa-book-open",
+                "fa-book-reader", "fa-scroll", "fa-certificate"
+            ];
+
+            allIcons.forEach(iconClass => {
+                const iconContainer = document.createElement('div');
+                iconContainer.className = 'icon-item-container';
+                iconContainer.addEventListener('click', () => selectIcon(iconClass));
+
+                iconContainer.innerHTML = `
+                    <div class="icon-item">
+                        <i class="fas ${iconClass}"></i>
+                    </div>
+                `;
+
+                iconGrid.appendChild(iconContainer);
+            });
+        }
+
+        function selectIcon(iconClass) {
+            if (currentEditingApp) {
+                const newIcon = `<i class="fas ${iconClass}"></i>`;
+                currentEditingApp.icon = newIcon;
+                // Сохраняем новую иконку в localStorage
+                savedIcons[currentEditingApp.id] = newIcon;
+                localStorage.setItem('clownadesiconsafe', JSON.stringify(savedIcons));
+                renderApps();
+                document.getElementById('iconSelector').style.display = 'none';
+                // Показываем селектор цветов после выбора иконки
+                showColorSelector();
+            }
+        }
+
+        function createAppElement(app, isModal = false) {
+            const appElement = document.createElement('div');
+            appElement.className = 'app-item';
+            
+            let iconClass = '';
+            if (app.name === 'Настройки') {
+                iconClass = 'settings-icon';
+            } else if (app.name === 'Редактировать') {
+                iconClass = 'edit-icon';
+            } else if (app.name === 'Добавить') {
+                iconClass = 'add-icon';
+            }
+            
+            // Применяем сохраненный цвет или используем стандартный
+            const savedColor = savedColors[app.id];
+            const customStyle = savedColor ? `background: linear-gradient(145deg, ${savedColor}, ${adjustColor(savedColor, -20)})` : '';
+            
+            appElement.innerHTML = `
+                <div class="app-icon ${iconClass}" style="${customStyle}">${app.icon}</div>
+                <div class="app-name">${app.name}</div>
+                ${!isModal && app.name !== 'Настройки' && app.name !== 'Добавить' && app.name !== 'Редактировать' ? '<div class="delete-btn">×</div>' : ''}
+            `;
+
+            if (app.url === '#') {
+                appElement.addEventListener('click', () => {
+                    if (app.name === 'Добавить') {
+                        showHiddenApps();
+                    } else if (app.name === 'Редактировать') {
+                        toggleEditMode();
+                    }
+                });
+            } else {
+                appElement.addEventListener('click', () => {
+                    if (isEditMode && !isModal && app.name !== 'Настройки' && app.name !== 'Добавить' && app.name !== 'Редактировать') {
+                        currentEditingApp = app;
+                        document.getElementById('iconSelector').style.display = 'block';
+                    } else {
+                        window.location.href = app.url;
+                    }
+                });
+            }
+
+            const deleteBtn = appElement.querySelector('.delete-btn');
+            if (deleteBtn) {
+                deleteBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    hideApp(app);
+                });
+            }
+
+            return appElement;
+        }
+
+        function renderApps() {
+            appGrid.innerHTML = '';
+            apps.forEach(app => {
+                if (!hiddenApps.includes(app.id)) {
+                    appGrid.appendChild(createAppElement(app));
+                }
+            });
+        }
+
+        function hideApp(app) {
+            if (!hiddenApps.includes(app.id)) {
+                hiddenApps.push(app.id);
+                localStorage.setItem('ClownadesHIDEapp', JSON.stringify(hiddenApps));
+                renderApps();
+            }
+        }
+
+        function showHiddenApps() {
+            hiddenAppsList.innerHTML = '';
+            apps.forEach(app => {
+                if (hiddenApps.includes(app.id)) {
+                    const appElement = createAppElement(app, true);
+                    hiddenAppsList.appendChild(appElement);
+                }
+            });
+            modal.style.display = 'block';
+        }
+
+        function restoreApp(appId) {
+            hiddenApps = hiddenApps.filter(id => id !== appId);
+            localStorage.setItem('ClownadesHIDEapp', JSON.stringify(hiddenApps));
+            renderApps();
+            showHiddenApps();
+        }
+
+        function restoreAllApps() {
+            hiddenApps = [];
+            localStorage.setItem('ClownadesHIDEapp', JSON.stringify(hiddenApps));
+            renderApps();
+            modal.style.display = 'none';
+        }
+
+        function toggleEditMode() {
+            isEditMode = !isEditMode;
+            const deleteButtons = document.querySelectorAll('.delete-btn');
+            deleteButtons.forEach(btn => {
+                btn.style.display = isEditMode ? 'flex' : 'none';
+            });
+        }
+
+        closeModalBtn.addEventListener('click', () => {
+            modal.style.display = 'none';
+        });
+
+        restoreAllBtn.addEventListener('click', restoreAllApps);
+
+        window.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                modal.style.display = 'none';
+            }
+        });
+
+        // Initialize icon selector
+        createIconSelector();
+
+        // Close icon selector when clicking outside
+        document.getElementById('iconSelector').addEventListener('click', (e) => {
+            if (e.target === document.getElementById('iconSelector')) {
+                document.getElementById('iconSelector').style.display = 'none';
+            }
+        });
+
+        // Close icon selector when clicking close button
+        document.querySelector('.icon-selector-close').addEventListener('click', () => {
+            document.getElementById('iconSelector').style.display = 'none';
+        });
+
+        // Initial render
+        renderApps();
+
+        const colorSelector = document.getElementById('colorSelector');
+        const colorSelectorClose = document.querySelector('.color-selector-close');
+
+        function showColorSelector() {
+            const colorItems = colorSelector.querySelectorAll('.color-item');
+            colorItems.forEach(item => {
+                item.style.backgroundColor = item.dataset.color;
+                item.classList.remove('selected');
+                if (savedColors[currentEditingApp.id] === item.dataset.color) {
+                    item.classList.add('selected');
+                }
+            });
+            colorSelector.style.display = 'block';
+        }
+
+        function adjustColor(color, amount) {
+            const hex = color.replace('#', '');
+            const r = Math.max(0, Math.min(255, parseInt(hex.substr(0, 2), 16) + amount));
+            const g = Math.max(0, Math.min(255, parseInt(hex.substr(2, 2), 16) + amount));
+            const b = Math.max(0, Math.min(255, parseInt(hex.substr(4, 2), 16) + amount));
+            return `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`;
+        }
+
+        // Обработчики событий для селектора цветов
+        colorSelector.querySelectorAll('.color-item').forEach(item => {
+            item.addEventListener('click', () => {
+                const color = item.dataset.color;
+                savedColors[currentEditingApp.id] = color;
+                localStorage.setItem('clownadeColorIcons', JSON.stringify(savedColors));
+                renderApps();
+                colorSelector.style.display = 'none';
+            });
+        });
+
+        colorSelectorClose.addEventListener('click', () => {
+            colorSelector.style.display = 'none';
+        });
+
+        // Закрытие селектора цветов при клике вне его
+        window.addEventListener('click', (e) => {
+            if (e.target === colorSelector) {
+                colorSelector.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>
