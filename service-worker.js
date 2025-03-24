@@ -3,7 +3,36 @@ const urlsToCache = [
   '/',
   '/index.html',
   '/setting.html',
+  '/app1.html',
+  '/app2.html',
+  '/app3.html',
+  '/app4.html',
+  '/app5.html',
+  '/app6.html',
+  '/app7.html',
+  '/app8.html',
+  '/app9.html',
+  '/app10.html',
+  '/app11.html',
+  '/app12.html',
+  '/app13.html',
+  '/app14.html',
+  '/app15.html',
+  '/app16.html',
+  '/app17.html',
+  '/app18.html',
+  '/app19.html',
+  '/app20.html',
+  '/src/styles/app1.css',
   '/src/styles/app2.css',
+  '/src/styles/app3.css',
+  '/src/styles/app4.css',
+  '/src/styles/app5.css',
+  '/src/scripts/app1.js',
+  '/src/scripts/app2.js',
+  '/src/scripts/app3.js',
+  '/src/scripts/app4.js',
+  '/src/scripts/app5.js',
   '/manifest.json',
   '/icons/icon-72x72.png',
   '/icons/icon-96x96.png',
@@ -57,7 +86,10 @@ self.addEventListener('fetch', (event) => {
 
             caches.open(CACHE_NAME)
               .then((cache) => {
-                cache.put(event.request, responseToCache);
+                // Добавляем в кэш только локальные ресурсы
+                if (event.request.url.startsWith(self.location.origin)) {
+                  cache.put(event.request, responseToCache);
+                }
               });
 
             return response;
