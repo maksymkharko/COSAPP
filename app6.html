@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Календарь привычек</title>
+  <link rel="stylesheet" href="src/styles/app5.css">
+</head>
+<body>
+  <div class="container">
+    <!-- Кнопка "Назад" -->
+    <a href="index.html" class="back-button">← Назад</a>
+
+    <!-- Заголовок и кнопка добавления календаря -->
+    <div class="header">
+      <h1>Календарь привычек</h1>
+      <button id="add-calendar-btn" class="add-button">+</button>
+    </div>
+
+    <!-- Список календарей -->
+    <div id="calendar-list" class="calendar-list"></div>
+
+    <!-- Модальное окно для создания календаря -->
+    <div id="create-modal" class="modal">
+      <div class="modal-content">
+        <h2>Создать календарь</h2>
+        <input type="text" id="calendar-name" placeholder="Имя календаря" required>
+        <input type="month" id="calendar-date" required>
+        <div class="modal-actions">
+          <button id="save-calendar-btn">Сохранить</button>
+          <button id="close-modal-btn">Закрыть</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Модальное окно для просмотра календаря -->
+    <div id="view-modal" class="modal">
+      <div class="modal-content">
+        <h2 id="view-calendar-name"></h2>
+        <div id="calendar-days" class="calendar-days"></div>
+        <div class="modal-actions">
+          <button id="delete-calendar-btn" class="delete-button">Удалить календарь</button>
+          <button id="close-view-modal-btn">Закрыть</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Модальное окно подтверждения удаления -->
+    <div id="confirm-delete-modal" class="modal">
+      <div class="modal-content">
+        <h2>Подтвердите удаление</h2>
+        <p>Вы уверены, что хотите удалить этот календарь?</p>
+        <div class="modal-actions">
+          <button id="confirm-delete-btn" class="delete-button">Удалить</button>
+          <button id="cancel-delete-btn">Отмена</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="src/scripts/app5.js"></script>
+</body>
+</html>

@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Мои закладки</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Подключение CSS из папки src/styles -->
+    <link rel="stylesheet" href="src/styles/app2.css">
+</head>
+<body>
+    <!-- Шапка -->
+<!-- Шапка -->
+<header class="header">
+    <a href="index.html" class="back-btn">
+        <i class="fas fa-chevron-left"></i> Назад
+    </a>
+    <h1 class="header-title">Закладки</h1>
+</header>
+
+    <!-- Верхняя панель -->
+    <div class="top-bar">
+        <button id="edit-btn" class="edit-btn">
+            <i class="fas fa-edit"></i> Редактировать
+        </button>
+        <button id="add-link-btn" class="add-link-btn">
+            <i class="fas fa-plus"></i>
+        </button>
+    </div>
+
+    <!-- Контейнер для отображения списка ссылок -->
+    <div id="links-container" class="links-container"></div>
+
+    <!-- Модальное окно для добавления/редактирования ссылки -->
+    <div id="link-modal" class="modal hidden">
+        <div class="modal-content">
+            <h2>Добавить ссылку</h2>
+            <input type="text" id="link-name" placeholder="Название ссылки" required>
+            <input type="url" id="link-url" placeholder="URL ссылки" required>
+            <textarea id="link-description" placeholder="Краткое описание"></textarea>
+            <div class="modal-buttons">
+                <button id="cancel-btn" class="cancel-btn">Отмена</button>
+                <button id="save-link-btn">Сохранить</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Подключение JavaScript из папки src/scripts -->
+    <script src="src/scripts/app2.js"></script>
+</body>
+</html>

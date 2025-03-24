@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Календарь привычек</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <link rel="stylesheet" href="src/styles/app5.css">
+</head>
+<body>
+  <div class="container">
+    <!-- Кнопка "Назад" -->
+    <a href="index.html" class="back-button">← Назад</a>
+
+    <!-- Заголовок и кнопка добавления календаря -->
+    <div class="header">
+      <h1>Календарь привычек</h1>
+      <button id="add-calendar-btn" class="add-button">+</button>
+    </div>
+
+    <!-- Список календарей -->
+    <div id="calendar-list" class="calendar-list"></div>
+
+    <!-- Модальное окно для создания календаря -->
+    <div id="create-modal" class="modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>Создать календарь</h2>
+          <button id="close-modal-btn" class="close-button">&times;</button>
+        </div>
+        <div class="modal-body">
+          <div class="input-group">
+            <label for="calendar-name"><i class="fas fa-calendar-alt"></i> Имя календаря</label>
+            <input type="text" id="calendar-name" placeholder="Введите имя" required>
+          </div>
+          <div class="input-group">
+            <label for="calendar-date"><i class="fas fa-calendar-day"></i> Месяц и год</label>
+            <input type="month" id="calendar-date" required>
+          </div>
+            </div>
+        <div class="modal-footer">
+          <button id="save-calendar-btn" class="save-button">Создать</button>
+        </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно для просмотра календаря -->
+    <div id="view-modal" class="modal">
+      <div class="modal-content">
+        <h2 id="view-calendar-name"></h2>
+        <div id="calendar-days" class="calendar-days"></div>
+        <div class="modal-actions">
+          <button id="delete-calendar-btn" class="delete-button">Удалить календарь</button>
+          <button id="close-view-modal-btn">Закрыть</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Модальное окно подтверждения удаления -->
+    <div id="confirm-delete-modal" class="modal">
+      <div class="modal-content">
+        <h2>Подтвердите удаление</h2>
+        <p>Вы уверены, что хотите удалить этот календарь?</p>
+        <div class="modal-actions">
+          <button id="confirm-delete-btn" class="delete-button">Удалить</button>
+          <button id="cancel-delete-btn">Отмена</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="src/scripts/app5.js"></script>
+</body>
+</html> 
