@@ -5,38 +5,3 @@
     <meta name=viewport content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#000000">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black">
-    <meta name="apple-mobile-web-app-title" content="Clownades">
-    <link rel="apple-touch-icon" href="icons/icon-152x152.png">    <title>ну давай я поищу на тебя, блядь, мне же не сложно</title>
-    <link rel="stylesheet" href="src/styles/app4.css">
-</head>
-<body>
-    <div class="container">
-        <!-- Кнопка "Назад" -->
-        <a href="index.html" class="back-button">← Назад</a>
-
-        <h1>ну давай я поищу на тебя, блядь, мне же не сложно</h1>
-        <input type="text" id="searchQuery" placeholder="Введите запрос, например: бритье жопы">
-
-        <div class="link-container" id="linkContainer">
-            <!-- Сюда будут вставлены кнопки -->
-        </div>
-    </div>
-
-    <script src="src/scripts/app4.js"></script>
-    <script>
-        if ("serviceWorker" in navigator) {
-            window.addEventListener("load", () => {
-                navigator.serviceWorker.register("service-worker.js")
-                    .then((registration) => {
-                        console.log("ServiceWorker registration successful");
-                    })
-                    .catch((err) => {
-                        console.log("ServiceWorker registration failed: ", err);
-                    });
-            });
-        }
-    </script>
-</body>
-</html>
