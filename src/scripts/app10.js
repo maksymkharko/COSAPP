@@ -98,23 +98,29 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Calculate Time Passed
     function getTimePassed(dateString) {
+        // Create dates in Warsaw timezone
         const today = new Date();
-        today.setHours(0, 0, 0, 0);
-        
         const startDate = new Date(dateString);
-        startDate.setHours(0, 0, 0, 0);
+        
+        // Convert to Warsaw timezone
+        const warsawToday = new Date(today.toLocaleString('en-US', { timeZone: 'Europe/Warsaw' }));
+        const warsawStartDate = new Date(startDate.toLocaleString('en-US', { timeZone: 'Europe/Warsaw' }));
+        
+        // Set time to midnight to avoid timezone issues
+        warsawToday.setHours(0, 0, 0, 0);
+        warsawStartDate.setHours(0, 0, 0, 0);
         
         // Calculate total days difference
-        const diffTime = today - startDate;
+        const diffTime = warsawToday - warsawStartDate;
         const totalDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
         
         // Calculate years
-        let years = Math.floor(totalDays / 365);
-        let remainingDays = totalDays % 365;
+        let years = Math.floor(totalDays / 365.25); // Account for leap years
+        let remainingDays = totalDays % 365.25;
         
-        // Calculate months
-        let months = Math.floor(remainingDays / 30);
-        remainingDays = remainingDays % 30;
+        // Calculate months (average 30.44 days per month)
+        let months = Math.floor(remainingDays / 30.44);
+        remainingDays = Math.floor(remainingDays % 30.44);
         
         // Calculate days
         let days = remainingDays;
@@ -323,9 +329,11 @@ document.addEventListener('DOMContentLoaded', function() {
     // Format Date
     function formatDate(dateString) {
         const date = new Date(dateString);
-        return date.toLocaleDateString('ru-RU', {
+        const warsawDate = new Date(date.toLocaleString('en-US', { timeZone: 'Europe/Warsaw' }));
+        return warsawDate.toLocaleDateString('ru-RU', {
             day: 'numeric',
-            month: 'long'
+            month: 'long',
+            timeZone: 'Europe/Warsaw'
         });
     }
     
