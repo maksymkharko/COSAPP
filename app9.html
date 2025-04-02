@@ -3,31 +3,103 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Трубопровод | Clownades</title>
+    <title>Подписки</title>
     <link rel="stylesheet" href="src/styles/app9.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
-    <div class="container">
-        <header class="header">
-            <a href="index.html" class="back-button">←</a>
-            <h1>Трубопровод</h1>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="app-header">
+            <a href="index.html" class="btn btn-back">
+                <i class="fas fa-arrow-left"></i>
+            </a>
+            <h1>Подписки</h1>
+            <button class="btn btn-add">
+                <i class="fas fa-plus"></i>
+            </button>
         </header>
 
-        <div class="game-info">
-            <div class="score">Уровень: <span id="level">1</span></div>
-            <div class="moves">Ходы: <span id="moves">0</span></div>
-            <div class="high-score">Рекорд: <span id="high-score">0</span></div>
+        <!-- Main Content -->
+        <main class="app-content">
+            <div class="subscriptions-list">
+                <!-- Subscriptions will be dynamically added here -->
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="app-footer">
+            <button class="btn btn-archive">
+                <i class="fas fa-archive"></i>
+                Архив
+            </button>
+        </footer>
+    </div>
+
+    <!-- Add/Edit Subscription Modal -->
+    <div class="modal" id="addSubscriptionModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Добавить подписку</h2>
+                <button class="btn btn-close">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="subscriptionName">Название</label>
+                    <input type="text" id="subscriptionName" placeholder="Введите название">
+                </div>
+                <div class="form-group">
+                    <label for="subscriptionAmount">Сумма</label>
+                    <input type="number" id="subscriptionAmount" placeholder="0.00">
+                </div>
+                <div class="form-group">
+                    <label for="subscriptionFrequency">Регулярность</label>
+                    <select id="subscriptionFrequency" required>
+                        <option value="monthly" selected>Раз в месяц</option>
+                        <option value="daily">Ежедневно</option>
+                        <option value="weekly">Раз в неделю</option>
+                        <option value="yearly">Раз в год</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="subscriptionCard">Карта</label>
+                    <input type="text" id="subscriptionCard" placeholder="Последние 4 цифры или название банка">
+                </div>
+                <div class="form-group">
+                    <label for="subscriptionLink">Ссылка (необязательно)</label>
+                    <input type="url" id="subscriptionLink" placeholder="https://">
+                </div>
+                <div class="form-group">
+                    <label for="subscriptionDate">Дата следующего списания</label>
+                    <input type="date" id="subscriptionDate">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-save">Сохранить</button>
+            </div>
         </div>
+    </div>
 
-        <div id="game-board" class="game-board"></div>
-
-        <div class="controls">
-            <button id="start-btn" class="glass-button">Пустить воду</button>
-            <button id="reset-btn" class="glass-button">Заново</button>
-            <button id="next-btn" class="glass-button" disabled>Следующий</button>
+    <!-- Archive Modal -->
+    <div class="modal" id="archiveModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Архив подписок</h2>
+                <button class="btn btn-close">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="archive-list">
+                    <!-- Archived subscriptions will be dynamically added here -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-delete-all">Удалить все из архива</button>
+            </div>
         </div>
-
-        <div class="notification" id="notification"></div>
     </div>
 
     <script src="src/scripts/app9.js"></script>
