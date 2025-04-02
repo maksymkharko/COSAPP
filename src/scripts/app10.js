@@ -99,23 +99,31 @@ document.addEventListener('DOMContentLoaded', function() {
     // Calculate Time Passed
     function getTimePassed(dateString) {
         const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        
         const startDate = new Date(dateString);
+        startDate.setHours(0, 0, 0, 0);
         
-        let years = today.getFullYear() - startDate.getFullYear();
-        let months = today.getMonth() - startDate.getMonth();
-        let days = today.getDate() - startDate.getDate();
+        // Calculate total days difference
+        const diffTime = today - startDate;
+        const totalDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
         
-        // Get the last day of the previous month
-        const lastMonth = new Date(today.getFullYear(), today.getMonth(), 0);
-        const daysInLastMonth = lastMonth.getDate();
+        // Calculate years
+        let years = Math.floor(totalDays / 365);
+        let remainingDays = totalDays % 365;
         
-        // Adjust for negative days
+        // Calculate months
+        let months = Math.floor(remainingDays / 30);
+        remainingDays = remainingDays % 30;
+        
+        // Calculate days
+        let days = remainingDays;
+        
+        // Adjust for negative values
         if (days < 0) {
             months--;
-            days += daysInLastMonth;
+            days += 30;
         }
-        
-        // Adjust for negative months
         if (months < 0) {
             years--;
             months += 12;
