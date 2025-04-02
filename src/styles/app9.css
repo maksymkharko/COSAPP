@@ -1,51 +1,384 @@
-.card {
-    aspect-ratio: 1;
-    perspective: 1000px;
-    cursor: pointer;
+:root {
+    --background: #000000;
+    --surface: rgba(28, 28, 30, 0.95);
+    --surface-secondary: rgba(44, 44, 46, 0.95);
+    --text-primary: #ffffff;
+    --text-secondary: rgba(255, 255, 255, 0.6);
+    --accent: #007AFF;
+    --danger: #FF3B30;
+    --success: #34C759;
+    --border: rgba(255, 255, 255, 0.1);
+    --shadow: rgba(0, 0, 0, 0.3);
 }
 
-.card-inner {
-    position: relative;
-    width: 100%;
-    height: 100%;
-    transition: transform 0.6s;
-    transform-style: preserve-3d;
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
 }
 
-.card.flipped .card-inner {
-    transform: rotateY(180deg);
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    background-color: var(--background);
+    color: var(--text-primary);
+    line-height: 1.5;
+    min-height: 100vh;
 }
 
-.card-front, .card-back {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    backface-visibility: hidden;
+.app-container {
     display: flex;
-    justify-content: center;
+    flex-direction: column;
+    min-height: 100vh;
+    background-color: var(--background);
+}
+
+/* Header Styles */
+.app-header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    display: flex;
     align-items: center;
-    border-radius: 8px;
+    justify-content: space-between;
+    padding: 1rem;
+    background-color: var(--surface);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--border);
 }
 
-.card-front {
-    background: rgba(255, 255, 255, 0.1);
+.app-header h1 {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+/* Button Styles */
+.btn {
+    background: none;
+    border: none;
+    color: var(--text-primary);
+    font-size: 1.2rem;
+    padding: 0.5rem;
+    cursor: pointer;
+    transition: transform 0.2s, opacity 0.2s;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn:active {
+    transform: scale(0.95);
+    opacity: 0.8;
+}
+
+.btn-back {
+    color: var(--accent);
+    text-decoration: none;
+}
+
+.btn-add {
+    color: var(--accent);
+}
+
+/* Main Content Styles */
+.app-content {
+    flex: 1;
+    padding: 1rem;
+    overflow-y: auto;
+}
+
+.subscriptions-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+}
+
+.subscription-item {
+    background-color: var(--surface);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-radius: 12px;
+    padding: 1rem;
+    border: 1px solid var(--border);
+    box-shadow: 0 4px 6px var(--shadow);
+    position: relative;
+    transition: transform 0.2s;
+}
+
+.subscription-item:active {
+    transform: scale(0.98);
+}
+
+.subscription-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.subscription-name {
+    font-weight: 600;
+    font-size: 1.1rem;
+}
+
+.btn-delete {
+    color: var(--danger);
+    font-size: 1rem;
+}
+
+.subscription-details {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+.subscription-amount {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--accent);
+}
+
+/* Footer Styles */
+.app-footer {
+    padding: 1rem;
+    background-color: var(--surface);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-top: 1px solid var(--border);
+}
+
+.btn-archive {
+    width: 100%;
+    height: auto;
+    padding: 0.8rem;
+    border-radius: 12px;
+    background-color: var(--surface-secondary);
+    color: var(--text-primary);
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+/* Modal Styles */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
     backdrop-filter: blur(5px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    -webkit-backdrop-filter: blur(5px);
+    z-index: 1000;
+    opacity: 0;
+    transition: opacity 0.3s;
 }
 
-.card-back {
-    background: rgba(0, 0, 0, 0.4);
-    transform: rotateY(180deg);
-    font-size: 24px;
+.modal.active {
+    display: flex;
+    opacity: 1;
 }
 
-.card.matched .card-back {
-    background: rgba(0, 200, 100, 0.3);
-    box-shadow: 0 0 10px rgba(0, 200, 100, 0.5);
+.modal-content {
+    background-color: var(--surface);
+    border-radius: 16px;
+    width: 90%;
+    max-width: 500px;
+    margin: auto;
+    max-height: 90vh;
+    overflow-y: auto;
+    transform: translateY(20px);
+    transition: transform 0.3s;
 }
 
-@media (max-width: 600px) {
-    .card-back {
-        font-size: 20px;
-    }
+.modal.active .modal-content {
+    transform: translateY(0);
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    border-bottom: 1px solid var(--border);
+}
+
+.modal-header h2 {
+    font-size: 1.2rem;
+    font-weight: 600;
+}
+
+.modal-body {
+    padding: 1rem;
+}
+
+.modal-footer {
+    padding: 1rem;
+    border-top: 1px solid var(--border);
+}
+
+/* Form Styles */
+.form-group {
+    margin-bottom: 1rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+.form-group input,
+.form-group select {
+    width: 100%;
+    padding: 0.8rem;
+    background-color: var(--surface-secondary);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text-primary);
+    font-size: 1rem;
+    transition: border-color 0.2s;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+    outline: none;
+    border-color: var(--accent);
+}
+
+.form-group input.error {
+    border-color: var(--danger);
+    animation: shake 0.5s;
+}
+
+/* Archive Styles */
+.archive-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+}
+
+.archive-item {
+    background-color: var(--surface-secondary);
+    border-radius: 8px;
+    padding: 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.btn-restore {
+    color: var(--accent);
+}
+
+/* Button Styles */
+.btn-save,
+.btn-delete-all {
+    width: 100%;
+    padding: 0.8rem;
+    border-radius: 8px;
+    border: none;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: transform 0.2s, opacity 0.2s;
+}
+
+.btn-save {
+    background-color: var(--accent);
+    color: white;
+}
+
+.btn-delete-all {
+    background-color: var(--danger);
+    color: white;
+}
+
+.btn-save:active,
+.btn-delete-all:active {
+    transform: scale(0.98);
+    opacity: 0.8;
+}
+
+/* Notification Styles */
+.notification {
+    position: fixed;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%) translateY(100px);
+    background-color: var(--surface);
+    padding: 1rem 2rem;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px var(--shadow);
+    z-index: 1000;
+    transition: transform 0.3s;
+}
+
+.notification.show {
+    transform: translateX(-50%) translateY(0);
+}
+
+/* Animations */
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    75% { transform: translateX(5px); }
+}
+
+/* Scrollbar Styles */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--surface);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--surface-secondary);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--text-secondary);
+}
+
+/* Monthly Total Styles */
+.monthly-total {
+    background-color: var(--surface);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-radius: 12px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    border: 1px solid var(--border);
+    box-shadow: 0 4px 6px var(--shadow);
+}
+
+.total-amount {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 1.2rem;
+    font-weight: 600;
+}
+
+.total-label {
+    color: var(--text-secondary);
+}
+
+.total-value {
+    color: var(--accent);
+    font-size: 1.4rem;
 }
