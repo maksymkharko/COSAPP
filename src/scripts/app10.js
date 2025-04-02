@@ -1,294 +1,423 @@
 document.addEventListener('DOMContentLoaded', function() {
-    // DOM Elements
-    const goalsList = document.querySelector('.goals-list');
-    const addGoalBtn = document.querySelector('.btn-add');
-    const addGoalModal = document.getElementById('addGoalModal');
+    // Элементы DOM
+    const backButton = document.querySelector('.back-button');
+    const addButton = document.querySelector('.add-button');
+    const eventsList = document.getElementById('eventsList');
+    const archiveButton = document.getElementById('archiveButton');
+    
+    // Модальные окна
+    const addEventModal = document.getElementById('addEventModal');
+    const editEventModal = document.getElementById('editEventModal');
     const archiveModal = document.getElementById('archiveModal');
-    const archiveBtn = document.querySelector('.btn-archive');
-    const closeModalBtns = document.querySelectorAll('.btn-close');
-    const saveGoalBtn = document.querySelector('.btn-save');
-    const deleteAllArchiveBtn = document.querySelector('.btn-delete-all');
-    const archiveList = document.querySelector('.archive-list');
     
-    // App Data
-    let goals = JSON.parse(localStorage.getItem('ClownadesGoalsEBATskokProshlo')) || [];
-    let archivedGoals = JSON.parse(localStorage.getItem('ClownadesGoalsEBATskokProshloArchive')) || [];
+    // Кнопки модальных окон
+    const cancelAdd = document.getElementById('cancelAdd');
+    const confirmAdd = document.getElementById('confirmAdd');
+    const cancelEdit = document.getElementById('cancelEdit');
+    const saveEdit = document.getElementById('saveEdit');
+    const archiveEvent = document.getElementById('archiveEvent');
+    const cancelArchive = document.getElementById('cancelArchive');
+    const deleteAllArchive = document.getElementById('deleteAllArchive');
     
-    // Initialize App
-    renderGoals();
+    // Поля ввода
+    const eventName = document.getElementById('eventName');
+    const eventDate = document.getElementById('eventDate');
+    const eventNote = document.getElementById('eventNote');
+    const editEventName = document.getElementById('editEventName');
+    const editEventDate = document.getElementById('editEventDate');
+    const editEventNote = document.getElementById('editEventNote');
     
-    // Open Add Goal Modal
-    addGoalBtn.addEventListener('click', function() {
-        addGoalModal.classList.add('active');
-        document.getElementById('goalStartDate').valueAsDate = new Date();
-    });
+    // Архив
+    const archiveList = document.getElementById('archiveList');
     
-    // Open Archive Modal
-    archiveBtn.addEventListener('click', function() {
-        renderArchive();
-        archiveModal.classList.add('active');
-    });
+    // Текущее редактируемое событие
+    let currentEventId = null;
     
-    // Close Modals
-    closeModalBtns.forEach(btn => {
-        btn.addEventListener('click', function() {
-            addGoalModal.classList.remove('active');
-            archiveModal.classList.remove('active');
-        });
-    });
+    // Загрузка данных из LocalStorage
+    function loadData() {
+        const data = localStorage.getItem('ClownadesWasznajaData');
+        return data ? JSON.parse(data) : { events: [], archive: [] };
+    }
     
-    // Close Modals when clicking outside
-    window.addEventListener('click', function(event) {
-        if (event.target === addGoalModal) {
-            addGoalModal.classList.remove('active');
-        }
-        if (event.target === archiveModal) {
-            archiveModal.classList.remove('active');
-        }
-    });
+    // Сохранение данных в LocalStorage
+    function saveData(data) {
+        localStorage.setItem('ClownadesWasznajaData', JSON.stringify(data));
+    }
     
-    // Save New Goal
-    saveGoalBtn.addEventListener('click', function() {
-        const name = document.getElementById('goalName').value.trim();
-        const startDate = document.getElementById('goalStartDate').value;
-        
-        // Validation
-        if (!name || !startDate) {
-            if (!name) document.getElementById('goalName').classList.add('error');
-            if (!startDate) document.getElementById('goalStartDate').classList.add('error');
-            
-            setTimeout(() => {
-                document.getElementById('goalName').classList.remove('error');
-                document.getElementById('goalStartDate').classList.remove('error');
-            }, 500);
-            
-            return;
-        }
-        
-        // Create new goal
-        const newGoal = {
-            id: Date.now(),
-            name,
-            startDate,
-            createdAt: new Date().toISOString()
-        };
-        
-        goals.push(newGoal);
-        saveGoals();
-        renderGoals();
-        addGoalModal.classList.remove('active');
-        
-        // Clear form
-        document.getElementById('goalName').value = '';
-        
-        showNotification('Цель добавлена');
-    });
+    // Открытие модального окна
+    function openModal(modal) {
+        modal.classList.add('active');
+    }
     
-    // Delete All Archived Goals
-    deleteAllArchiveBtn.addEventListener('click', function() {
-        if (archivedGoals.length === 0) return;
-        
-        if (confirm('Вы уверены, что хотите удалить все цели из архива?')) {
-            archivedGoals = [];
-            saveArchivedGoals();
-            renderArchive();
-            showNotification('Архив очищен');
-        }
-    });
+    // Закрытие модального окна
+    function closeModal(modal) {
+        modal.classList.remove('active');
+    }
     
-    // Render Goals List
-    function renderGoals() {
-        goalsList.innerHTML = '';
-        
-        if (goals.length === 0) {
-            goalsList.innerHTML = '<p style="text-align: center; color: var(--text-secondary);">Нет активных целей</p>';
-            return;
-        }
-        
-        // Sort by start date
-        goals.sort((a, b) => new Date(b.startDate) - new Date(a.startDate));
-        
-        goals.forEach(goal => {
-            const daysPassed = getDaysPassed(goal.startDate);
-            
-            const goalItem = document.createElement('div');
-            goalItem.className = 'goal-item';
-            goalItem.innerHTML = `
-                <div class="goal-header">
-                    <div class="goal-name">${goal.name}</div>
-                    <button class="btn btn-delete" data-id="${goal.id}">
-                        <i class="fas fa-times"></i>
-                    </button>
-                </div>
-                <div class="goal-details">
-                    <div>Начало: ${formatDate(goal.startDate)}</div>
-                    <div>Прошло: ${daysPassed} дней</div>
-                </div>
-            `;
-            
-            goalsList.appendChild(goalItem);
-            
-            // Delete goal handler
-            goalItem.querySelector('.btn-delete').addEventListener('click', function(e) {
-                e.stopPropagation();
-                moveToArchive(goal.id);
-            });
-            
-            // Edit goal handler
-            goalItem.addEventListener('click', function() {
-                editGoal(goal.id);
-            });
+    // Очистка полей формы
+    function clearForm() {
+        eventName.value = '';
+        eventDate.value = '';
+        eventNote.value = '';
+    }
+    
+    // Создание ID для события
+    function generateId() {
+        return Date.now().toString(36) + Math.random().toString(36).substr(2);
+    }
+    
+    // Форматирование даты
+    function formatDate(dateString) {
+        const date = new Date(dateString);
+        return date.toLocaleString('ru-RU', {
+            day: 'numeric',
+            month: 'long',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
         });
     }
     
-    // Render Archive List
+    // Расчет оставшегося времени
+    function calculateTimeRemaining(targetDate) {
+        const now = new Date();
+        const target = new Date(targetDate);
+        const diff = target - now;
+        
+        if (diff <= 0) return { years: 0, months: 0, days: 0, hours: 0, minutes: 0, seconds: 0 };
+        
+        const seconds = Math.floor(diff / 1000);
+        const minutes = Math.floor(seconds / 60);
+        const hours = Math.floor(minutes / 60);
+        const days = Math.floor(hours / 24);
+        const months = Math.floor(days / 30.44); // Среднее количество дней в месяце
+        const years = Math.floor(months / 12);
+        
+        return {
+            years: years,
+            months: months % 12,
+            days: days % 30,
+            hours: hours % 24,
+            minutes: minutes % 60,
+            seconds: seconds % 60
+        };
+    }
+    
+    // Проверка, осталось ли меньше года до события
+    function isLessThanYearAway(targetDate) {
+        const now = new Date();
+        const target = new Date(targetDate);
+        const diff = target - now;
+        const days = diff / (1000 * 60 * 60 * 24);
+        
+        return days < 365;
+    }
+    
+    // Проверка, осталась ли неделя до события
+    function isLessThanWeekAway(targetDate) {
+        const now = new Date();
+        const target = new Date(targetDate);
+        const diff = target - now;
+        const days = diff / (1000 * 60 * 60 * 24);
+        
+        return days < 7;
+    }
+    
+    // Создание элемента таймера
+    function createTimerElement(timeRemaining, targetDate) {
+        const timerContainer = document.createElement('div');
+        timerContainer.className = 'timer-container';
+        
+        if (isLessThanWeekAway(targetDate)) {
+            timerContainer.classList.add('timer-warning');
+        }
+        
+        const yearsBox = document.createElement('div');
+        yearsBox.className = 'timer-box';
+        yearsBox.innerHTML = `<div class="timer-value">${timeRemaining.years}</div><div class="timer-label">лет</div>`;
+        
+        const monthsBox = document.createElement('div');
+        monthsBox.className = 'timer-box';
+        monthsBox.innerHTML = `<div class="timer-value">${timeRemaining.months}</div><div class="timer-label">мес</div>`;
+        
+        const daysBox = document.createElement('div');
+        daysBox.className = 'timer-box';
+        daysBox.innerHTML = `<div class="timer-value">${timeRemaining.days}</div><div class="timer-label">дней</div>`;
+        
+        const hoursBox = document.createElement('div');
+        hoursBox.className = 'timer-box';
+        hoursBox.innerHTML = `<div class="timer-value">${timeRemaining.hours}</div><div class="timer-label">часов</div>`;
+        
+        timerContainer.appendChild(yearsBox);
+        timerContainer.appendChild(monthsBox);
+        timerContainer.appendChild(daysBox);
+        timerContainer.appendChild(hoursBox);
+        
+        return timerContainer;
+    }
+    
+    // Создание карточки события
+    function createEventCard(event) {
+        const eventCard = document.createElement('div');
+        eventCard.className = 'event-card';
+        eventCard.dataset.id = event.id;
+        
+        const timeRemaining = calculateTimeRemaining(event.date);
+        
+        eventCard.innerHTML = `
+            <h3>${event.name}</h3>
+            <div class="event-date">${formatDate(event.date)}</div>
+            <div class="event-note">${event.note}</div>
+        `;
+        
+        const timerElement = createTimerElement(timeRemaining, event.date);
+        eventCard.appendChild(timerElement);
+        
+        return eventCard;
+    }
+    
+    // Обновление таймеров
+    function updateTimers() {
+        const eventCards = document.querySelectorAll('.event-card');
+        eventCards.forEach(card => {
+            const timerContainer = card.querySelector('.timer-container');
+            if (timerContainer) {
+                const eventId = card.dataset.id;
+                const data = loadData();
+                const event = data.events.find(e => e.id === eventId);
+                
+                if (event) {
+                    const timeRemaining = calculateTimeRemaining(event.date);
+                    const newTimer = createTimerElement(timeRemaining, event.date);
+                    timerContainer.replaceWith(newTimer);
+                    
+                    // Добавляем класс warning, если осталось меньше недели
+                    if (isLessThanWeekAway(event.date)) {
+                        card.querySelector('.timer-container').classList.add('timer-warning');
+                    }
+                }
+            }
+        });
+    }
+    
+    // Отображение списка событий
+    function renderEvents() {
+        eventsList.innerHTML = '';
+        const data = loadData();
+        
+        data.events.forEach(event => {
+            const eventCard = createEventCard(event);
+            eventsList.appendChild(eventCard);
+        });
+        
+        // Добавляем обработчики событий для карточек
+        addEventCardListeners();
+    }
+    
+    // Отображение списка архивных событий
     function renderArchive() {
         archiveList.innerHTML = '';
+        const data = loadData();
         
-        if (archivedGoals.length === 0) {
-            archiveList.innerHTML = '<p style="text-align: center; color: var(--text-secondary);">Архив пуст</p>';
+        if (data.archive.length === 0) {
+            archiveList.innerHTML = '<p style="color: var(--text-secondary); text-align: center;">Архив пуст</p>';
             return;
         }
         
-        archivedGoals.forEach(goal => {
+        data.archive.forEach(event => {
             const archiveItem = document.createElement('div');
             archiveItem.className = 'archive-item';
             archiveItem.innerHTML = `
-                <div>${goal.name}</div>
-                <button class="btn btn-restore" data-id="${goal.id}">
-                    <i class="fas fa-undo"></i>
-                </button>
+                <div class="archive-item-info">
+                    <h4>${event.name}</h4>
+                    <div class="event-date">${formatDate(event.date)}</div>
+                </div>
+                <button class="restore-button" data-id="${event.id}">Вернуть</button>
             `;
-            
             archiveList.appendChild(archiveItem);
-            
-            // Restore goal handler
-            archiveItem.querySelector('.btn-restore').addEventListener('click', function(e) {
-                e.stopPropagation();
-                restoreFromArchive(goal.id);
+        });
+        
+        // Добавляем обработчики событий для кнопок восстановления
+        document.querySelectorAll('.restore-button').forEach(button => {
+            button.addEventListener('click', function() {
+                restoreFromArchive(this.dataset.id);
             });
         });
     }
     
-    // Move Goal to Archive
-    function moveToArchive(id) {
-        const index = goals.findIndex(goal => goal.id === id);
-        if (index === -1) return;
-        
-        const [goal] = goals.splice(index, 1);
-        archivedGoals.push(goal);
-        
-        saveGoals();
-        saveArchivedGoals();
-        renderGoals();
-        showNotification('Цель перемещена в архив');
-    }
-    
-    // Restore Goal from Archive
-    function restoreFromArchive(id) {
-        const index = archivedGoals.findIndex(goal => goal.id === id);
-        if (index === -1) return;
-        
-        const [goal] = archivedGoals.splice(index, 1);
-        goals.push(goal);
-        
-        saveGoals();
-        saveArchivedGoals();
-        renderArchive();
-        renderGoals();
-        showNotification('Цель восстановлена');
-    }
-    
-    // Edit Goal
-    function editGoal(id) {
-        const goal = goals.find(goal => goal.id === id);
-        if (!goal) return;
-        
-        document.getElementById('goalName').value = goal.name;
-        document.getElementById('goalStartDate').value = goal.startDate;
-        
-        addGoalModal.classList.add('active');
-        
-        // Update save handler for editing
-        saveGoalBtn.onclick = function() {
-            const name = document.getElementById('goalName').value.trim();
-            const startDate = document.getElementById('goalStartDate').value;
-            
-            // Validation
-            if (!name || !startDate) {
-                if (!name) document.getElementById('goalName').classList.add('error');
-                if (!startDate) document.getElementById('goalStartDate').classList.add('error');
-                
-                setTimeout(() => {
-                    document.getElementById('goalName').classList.remove('error');
-                    document.getElementById('goalStartDate').classList.remove('error');
-                }, 500);
-                
-                return;
-            }
-            
-            // Update goal
-            goal.name = name;
-            goal.startDate = startDate;
-            
-            saveGoals();
-            renderGoals();
-            addGoalModal.classList.remove('active');
-            
-            // Restore default save handler
-            saveGoalBtn.onclick = arguments.callee;
-            
-            showNotification('Цель обновлена');
-        };
-    }
-    
-    // Save Goals to localStorage
-    function saveGoals() {
-        localStorage.setItem('ClownadesGoalsEBATskokProshlo', JSON.stringify(goals));
-    }
-    
-    // Save Archived Goals to localStorage
-    function saveArchivedGoals() {
-        localStorage.setItem('ClownadesGoalsEBATskokProshloArchive', JSON.stringify(archivedGoals));
-    }
-    
-    // Calculate Days Passed
-    function getDaysPassed(dateString) {
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
-        
-        const startDate = new Date(dateString);
-        startDate.setHours(0, 0, 0, 0);
-        
-        const diffTime = today - startDate;
-        return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    }
-    
-    // Format Date
-    function formatDate(dateString) {
-        const date = new Date(dateString);
-        return date.toLocaleDateString('ru-RU', {
-            day: 'numeric',
-            month: 'long'
+    // Добавление обработчиков событий для карточек
+    function addEventCardListeners() {
+        document.querySelectorAll('.event-card').forEach(card => {
+            card.addEventListener('click', function() {
+                const eventId = this.dataset.id;
+                openEditModal(eventId);
+            });
         });
     }
     
-    // Show Notification
-    function showNotification(message) {
-        const notification = document.createElement('div');
-        notification.className = 'notification';
-        notification.textContent = message;
-        document.body.appendChild(notification);
+    // Открытие модального окна редактирования
+    function openEditModal(eventId) {
+        const data = loadData();
+        const event = data.events.find(e => e.id === eventId);
         
-        setTimeout(() => {
-            notification.classList.add('show');
-        }, 10);
-        
-        setTimeout(() => {
-            notification.classList.remove('show');
-            setTimeout(() => {
-                notification.remove();
-            }, 300);
-        }, 3000);
+        if (event) {
+            currentEventId = eventId;
+            editEventName.value = event.name;
+            editEventDate.value = event.date.replace(' ', 'T').slice(0, 16);
+            editEventNote.value = event.note;
+            openModal(editEventModal);
+        }
     }
+    
+    // Добавление нового события
+    function addNewEvent() {
+        if (!eventName.value || !eventDate.value) {
+            if (!eventName.value) {
+                eventName.classList.add('shake');
+                setTimeout(() => eventName.classList.remove('shake'), 400);
+            }
+            if (!eventDate.value) {
+                eventDate.classList.add('shake');
+                setTimeout(() => eventDate.classList.remove('shake'), 400);
+            }
+            return;
+        }
+        
+        const data = loadData();
+        const newEvent = {
+            id: generateId(),
+            name: eventName.value,
+            date: eventDate.value,
+            note: eventNote.value
+        };
+        
+        data.events.push(newEvent);
+        saveData(data);
+        renderEvents();
+        clearForm();
+        closeModal(addEventModal);
+    }
+    
+    // Сохранение изменений события
+    function saveEventChanges() {
+        if (!editEventName.value || !editEventDate.value) {
+            if (!editEventName.value) {
+                editEventName.classList.add('shake');
+                setTimeout(() => editEventName.classList.remove('shake'), 400);
+            }
+            if (!editEventDate.value) {
+                editEventDate.classList.add('shake');
+                setTimeout(() => editEventDate.classList.remove('shake'), 400);
+            }
+            return;
+        }
+        
+        const data = loadData();
+        const eventIndex = data.events.findIndex(e => e.id === currentEventId);
+        
+        if (eventIndex !== -1) {
+            data.events[eventIndex] = {
+                id: currentEventId,
+                name: editEventName.value,
+                date: editEventDate.value,
+                note: editEventNote.value
+            };
+            
+            saveData(data);
+            renderEvents();
+            closeModal(editEventModal);
+        }
+    }
+    
+    // Перемещение события в архив
+    function moveToArchive() {
+        const data = loadData();
+        const eventIndex = data.events.findIndex(e => e.id === currentEventId);
+        
+        if (eventIndex !== -1) {
+            const [archivedEvent] = data.events.splice(eventIndex, 1);
+            data.archive.push(archivedEvent);
+            saveData(data);
+            renderEvents();
+            closeModal(editEventModal);
+        }
+    }
+    
+    // Восстановление из архива
+    function restoreFromArchive(eventId) {
+        const data = loadData();
+        const eventIndex = data.archive.findIndex(e => e.id === eventId);
+        
+        if (eventIndex !== -1) {
+            const [restoredEvent] = data.archive.splice(eventIndex, 1);
+            data.events.push(restoredEvent);
+            saveData(data);
+            renderEvents();
+            renderArchive();
+        }
+    }
+    
+    // Удаление всех архивных событий
+    function deleteAllArchive() {
+        const data = loadData();
+        data.archive = [];
+        saveData(data);
+        renderArchive();
+    }
+    
+    // Инициализация приложения
+    function init() {
+        // Проверяем, есть ли данные в LocalStorage
+        if (!localStorage.getItem('ClownadesWasznajaData')) {
+            const initialData = {
+                events: [],
+                archive: []
+            };
+            saveData(initialData);
+        }
+        
+        // Рендерим события
+        renderEvents();
+        
+        // Обновляем таймеры каждую секунду
+        setInterval(updateTimers, 1000);
+    }
+    
+    // Обработчики событий
+    backButton.addEventListener('click', function() {
+        window.location.href = 'index.html';
+    });
+    
+    addButton.addEventListener('click', function() {
+        clearForm();
+        openModal(addEventModal);
+    });
+    
+    cancelAdd.addEventListener('click', function() {
+        closeModal(addEventModal);
+    });
+    
+    confirmAdd.addEventListener('click', addNewEvent);
+    
+    cancelEdit.addEventListener('click', function() {
+        closeModal(editEventModal);
+    });
+    
+    saveEdit.addEventListener('click', saveEventChanges);
+    
+    archiveEvent.addEventListener('click', moveToArchive);
+    
+    archiveButton.addEventListener('click', function() {
+        renderArchive();
+        openModal(archiveModal);
+    });
+    
+    cancelArchive.addEventListener('click', function() {
+        closeModal(archiveModal);
+    });
+    
+    deleteAllArchive.addEventListener('click', deleteAllArchive);
+    
+    // Инициализация
+    init();
 });
