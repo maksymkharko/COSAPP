@@ -3,82 +3,95 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ебать скольлько прошло времени</title>
+    <title>Clownades - Напоминания</title>
     <link rel="stylesheet" href="src/styles/app10.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap">
 </head>
 <body>
-    <div class="app-container">
-        <!-- Header -->
-        <header class="app-header">
-            <a href="index.html" class="btn btn-back">
-                <i class="fas fa-arrow-left"></i>
-            </a>
-            <h1>Ебать скольлько прошло времени</h1>
-            <button class="btn btn-add">
-                <i class="fas fa-plus"></i>
+    <div class="container">
+        <header class="header">
+            <button class="back-button">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M15 18L9 12L15 6" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </button>
+            <h1>Clownades</h1>
+            <button class="add-button">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 5V19" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M5 12H19" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
             </button>
         </header>
 
-        <!-- Main Content -->
-        <main class="app-content">
-            <div class="goals-list">
-                <!-- Goals will be dynamically added here -->
+        <main class="main-content">
+            <div class="events-list" id="eventsList">
+                <!-- События будут добавляться сюда -->
+            </div>
+
+            <div class="archive-section">
+                <button class="archive-button" id="archiveButton">Архив</button>
             </div>
         </main>
-
-        <!-- Footer -->
-        <footer class="app-footer">
-            <button class="btn btn-archive">
-                <i class="fas fa-archive"></i>
-                Архив
-            </button>
-        </footer>
     </div>
 
-    <!-- Add/Edit Goal Modal -->
-    <div id="addGoalModal" class="modal">
+    <!-- Модальное окно добавления события -->
+    <div class="modal" id="addEventModal">
         <div class="modal-content">
-            <div class="modal-header">
-                <h2>Новая хуйня</h2>
-                <button class="btn btn-close">
-                    <i class="fas fa-times"></i>
-                </button>
+            <h2>Новое событие</h2>
+            <div class="input-group">
+                <label for="eventName">Название</label>
+                <input type="text" id="eventName" placeholder="Введите название">
             </div>
-            <div class="modal-body">
-                <form id="goalForm">
-                    <div class="form-group">
-                        <label for="goalName">Название</label>
-                        <input type="text" id="goalName" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="goalStartDate">Дата начала</label>
-                        <input type="date" id="goalStartDate" required>
-                    </div>
-                </form>
+            <div class="input-group">
+                <label for="eventDate">Дата и время</label>
+                <input type="datetime-local" id="eventDate">
             </div>
-            <div class="modal-footer">
-                <button class="btn btn-save">Сохранить</button>
+            <div class="input-group">
+                <label for="eventNote">Заметка</label>
+                <textarea id="eventNote" rows="3" placeholder="Добавьте заметку"></textarea>
+            </div>
+            <div class="modal-actions">
+                <button class="cancel-button" id="cancelAdd">Отмена</button>
+                <button class="add-button" id="confirmAdd">Добавить</button>
             </div>
         </div>
     </div>
 
-    <!-- Archive Modal -->
-    <div id="archiveModal" class="modal">
+    <!-- Модальное окно редактирования события -->
+    <div class="modal" id="editEventModal">
         <div class="modal-content">
-            <div class="modal-header">
-                <h2>Архив целей</h2>
-                <button class="btn btn-close">
-                    <i class="fas fa-times"></i>
-                </button>
+            <h2>Редактировать</h2>
+            <div class="input-group">
+                <label for="editEventName">Название</label>
+                <input type="text" id="editEventName">
             </div>
-            <div class="modal-body">
-                <div class="archive-list">
-                    <!-- Archived goals will be dynamically added here -->
-                </div>
+            <div class="input-group">
+                <label for="editEventDate">Дата и время</label>
+                <input type="datetime-local" id="editEventDate">
             </div>
-            <div class="modal-footer">
-                <button class="btn btn-delete-all">Удалить все</button>
+            <div class="input-group">
+                <label for="editEventNote">Заметка</label>
+                <textarea id="editEventNote" rows="3"></textarea>
+            </div>
+            <div class="modal-actions">
+                <button class="cancel-button" id="cancelEdit">Отмена</button>
+                <button class="archive-button" id="archiveEvent">В архив</button>
+                <button class="add-button" id="saveEdit">Сохранить</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно архива -->
+    <div class="modal" id="archiveModal">
+        <div class="modal-content">
+            <h2>Архив</h2>
+            <div class="archive-list" id="archiveList">
+                <!-- Архивные события будут добавляться сюда -->
+            </div>
+            <div class="modal-actions">
+                <button class="cancel-button" id="cancelArchive">Отмена</button>
+                <button class="delete-button" id="deleteAllArchive">Удалить всё</button>
             </div>
         </div>
     </div>
