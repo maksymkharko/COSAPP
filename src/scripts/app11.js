@@ -106,3 +106,37 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
+
+
+// Весь предыдущий код остается без изменений
+
+// Добавляем в конец файла:
+
+// Обработчики для премиум-кнопки и модального окна
+const premiumButton = document.getElementById('premiumButton');
+const modalOverlay = document.getElementById('modalOverlay');
+const modalCloseButton = document.getElementById('modalCloseButton');
+
+premiumButton.addEventListener('click', () => {
+    modalOverlay.classList.add('active');
+    document.body.style.overflow = 'hidden';
+});
+
+modalCloseButton.addEventListener('click', () => {
+    modalOverlay.classList.remove('active');
+    document.body.style.overflow = 'auto';
+});
+
+modalOverlay.addEventListener('click', (e) => {
+    if (e.target === modalOverlay) {
+        modalOverlay.classList.remove('active');
+        document.body.style.overflow = 'auto';
+    }
+});
+
+// Добавляем вибрацию при нажатии на премиум-кнопку для эффекта
+premiumButton.addEventListener('mousedown', () => {
+    if (navigator.vibrate) {
+        navigator.vibrate(50);
+    }
+});
