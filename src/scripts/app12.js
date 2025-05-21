@@ -1,27 +1,42 @@
 document.addEventListener('DOMContentLoaded', function() {
+    // Функция для форматирования даты
+    function formatDate(dateStr) {
+        const [day, month, year] = dateStr.split('.');
+        return new Date(`${year}-${month}-${day}`);
+    }
+
     // Обновляем таймеры для всех подписок
     function updateTimers() {
         const timeElements = document.querySelectorAll('.time-left');
         const now = new Date();
         
         timeElements.forEach(element => {
-            const endDate = new Date(element.getAttribute('data-end'));
+            const endDateStr = element.getAttribute('data-end');
+            const endDate = formatDate(endDateStr);
             const diff = endDate - now;
             
             if (diff <= 0) {
                 element.textContent = 'Подписка истекла!';
-                element.style.color = '#ff5555';
+                element.style.color = 'var(--danger-color)';
                 return;
             }
             
             const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-            const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
             
-            if (days > 0) {
-                element.textContent = `Осталось: ${days} дн. ${hours} ч.`;
+            if (days > 30) {
+                element.textContent = `Осталось: ${Math.floor(days/30)} мес. ${days%30} дн.`;
+                element.style.color = 'var(--accent-color)';
+            } else if (days > 0) {
+                element.textContent = `Осталось: ${days} дн.`;
+                if (days < 7) {
+                    element.style.color = 'var(--warning-color)';
+                } else {
+                    element.style.color = 'var(--accent-color)';
+                }
             } else {
-                element.textContent = `Осталось: ${hours} часов`;
-                element.style.color = '#ffaa00';
+                const hours = Math.floor(diff / (1000 * 60 * 60));
+                element.textContent = `Осталось: ${hours} ч.`;
+                element.style.color = 'var(--danger-color)';
             }
         });
     }
@@ -29,15 +44,4 @@ document.addEventListener('DOMContentLoaded', function() {
     // Обновляем таймеры сразу и каждую минуту
     updateTimers();
     setInterval(updateTimers, 60000);
-    
-    // Регистрация Service Worker для PWA
-    if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-            navigator.serviceWorker.register('sw.js').then(registration => {
-                console.log('ServiceWorker registration successful');
-            }).catch(err => {
-                console.log('ServiceWorker registration failed: ', err);
-            });
-        });
-    }
 });
