@@ -13,68 +13,77 @@
             <h1 class="title">Подписки BumsFamily</h1>
         </header>
 
-        <div class="subscription-container">
-            <h2 class="service-title">YouTube Premium</h2>
-            <p class="service-price">10 zł/мес или 100 грн/мес</p>
-            <div class="user-list">
-                <div class="user-card">
-                    <div class="user-info">
-                        <span class="user-name">Алексей Новиков</span>
-                        <a href="https://t.me/alexnov" class="telegram-link" target="_blank">@alexnov</a>
-                    </div>
-                    <div class="subscription-info">
-                        <span class="payment-date">Оплачено до: 15.06.2024</span>
-                        <span class="time-left" data-end="2024-06-15">Осталось: 24 дня</span>
-                    </div>
-                </div>
+        <!-- Данные подписок (легко редактировать) -->
+        <script type="application/json" id="subscriptions-data">
+        {
+            "youtube": {
+                "price": "10 zł/мес или 100 грн/мес",
+                "members": [
+                    {
+                        "name": "Максим",
+                        "telegram": "clownades",
+                        "end_date": "01.01.2030"
+                    },
+                    {
+                        "name": "Катя",
+                        "telegram": "@k8vyshnevska",
+                        "end_date": "01.01.2030"
+                    },
+                    {
+                        "name": "Али",
+                        "telegram": "@ali_gerdov",
+                        "end_date": "08.06.2025"
+                    },
+                    {
+                        "name": "Ксюша",
+                        "telegram": "+380966998890",
+                        "end_date": "20.06.2025"
+                    },
+                    {
+                        "name": "Таня",
+                        "telegram": "@tanksks",
+                        "end_date": "8.06.2025"
+                    },
+                    {
+                        "name": "Руслан",
+                        "telegram": "@novembermeber",
+                        "end_date": "09.07.2025"
+                    }
+                ]
+            },
+            "kinopub": {
+                "price": "6 zł/мес или 65 грн/мес",
+                "members": [
+                    {
+                        "name": "Максим",
+                        "telegram": "clownades",
+                        "end_date": "01.01.2030"
+                    },
+                    {
+                        "name": "Али",
+                        "telegram": "@k8vyshnevska",
+                        "end_date": "24.05.2025"
+                    },
+                    {
+                        "name": "Юля",
+                        "telegram": "@jul_R5",
+                        "end_date": "24.05.2025"
+                    }
+                ]
+            }
+        }
+        </script>
 
-                <div class="user-card">
-                    <div class="user-info">
-                        <span class="user-name">Ирина Смирнова</span>
-                        <a href="https://t.me/irinas" class="telegram-link" target="_blank">@irinas</a>
-                    </div>
-                    <div class="subscription-info">
-                        <span class="payment-date">Оплачено до: 10.07.2024</span>
-                        <span class="time-left" data-end="2024-07-10">Осталось: 39 дней</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="subscription-container">
-            <h2 class="service-title">Kinopub</h2>
-            <p class="service-price">6 zł/мес или 65 грн/мес</p>
-            <div class="user-list">
-                <div class="user-card">
-                    <div class="user-info">
-                        <span class="user-name">Андрей Соколов</span>
-                        <a href="https://t.me/andrey_s" class="telegram-link" target="_blank">@andrey_s</a>
-                    </div>
-                    <div class="subscription-info">
-                        <span class="payment-date">Оплачено до: 12.07.2024</span>
-                        <span class="time-left" data-end="2024-07-12">Осталось: 41 день</span>
-                    </div>
-                </div>
-
-                <div class="user-card">
-                    <div class="user-info">
-                        <span class="user-name">Елена Кузнецова</span>
-                        <a href="https://t.me/elena_k" class="telegram-link" target="_blank">@elena_k</a>
-                    </div>
-                    <div class="subscription-info">
-                        <span class="payment-date">Оплачено до: 08.07.2024</span>
-                        <span class="time-left" data-end="2024-07-08">Осталось: 37 дней</span>
-                    </div>
-                </div>
-            </div>
+        <div id="subscriptions-container">
+            <!-- Сюда будет вставлен контент через JS -->
         </div>
 
         <footer class="footer">
-            <a href="https://t.me/bumsfamily_group" class="telegram-group-link" target="_blank">Telegram группа</a>
+            <a href="https://t.me/+RMZD8DstnSM0Nzg0" class="telegram-group-link" target="_blank">Telegram группа</a>
             <div class="requisites">
                 <p>Реквизиты для оплаты:</p>
-                <p>Карта: 1234 5678 9012 3456</p>
-                <p>PayPal: bumsfamily@example.com</p>
+                <p>Карта Privat24: 5168742242946626</p>
+                <p>blik: 731542320</p>
             </div>
         </footer>
     </div>
