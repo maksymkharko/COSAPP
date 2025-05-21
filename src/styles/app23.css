@@ -4,7 +4,7 @@
     --text-color: #e0e0e0;
     --accent-color: #3a7bd5;
     --shadow-color: rgba(0, 0, 0, 0.5);
-    --border-radius: 12px;
+    --border-radius: 10px;
     --warning-color: #ffaa00;
     --danger-color: #ff5555;
 }
@@ -15,170 +15,169 @@ body {
     color: var(--text-color);
     margin: 0;
     padding: 0;
-    line-height: 1.6;
+    line-height: 1.4;
+    font-size: 14px;
 }
 
 .container {
     max-width: 600px;
     margin: 0 auto;
-    padding: 20px;
+    padding: 15px;
 }
 
 .header {
     display: flex;
     align-items: center;
-    margin-bottom: 25px;
-    position: relative;
+    margin-bottom: 20px;
 }
 
 .back-button {
-    background: var(--card-bg);
+    background: none;
     border: none;
     color: var(--accent-color);
     font-size: 24px;
-    padding: 8px 15px;
-    border-radius: 50%;
+    padding: 5px 15px 5px 5px;
     cursor: pointer;
-    box-shadow: 0 4px 8px var(--shadow-color);
-    transition: transform 0.2s, box-shadow 0.2s;
-    margin-right: 15px;
-}
-
-.back-button:active {
-    transform: scale(0.95);
-    box-shadow: 0 2px 4px var(--shadow-color);
 }
 
 .title {
-    font-size: 24px;
+    font-size: 20px;
     font-weight: 600;
     margin: 0;
-    text-shadow: 0 2px 4px var(--shadow-color);
 }
 
 .subscription-container {
     background: var(--card-bg);
     border-radius: var(--border-radius);
-    padding: 20px;
-    margin-bottom: 25px;
-    box-shadow: 0 8px 16px var(--shadow-color),
-                inset 0 1px 1px rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.05);
+    padding: 15px;
+    margin-bottom: 15px;
+    box-shadow: 0 4px 8px var(--shadow-color);
+}
+
+.service-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
 }
 
 .service-title {
-    font-size: 20px;
-    margin-top: 0;
-    margin-bottom: 5px;
+    font-size: 16px;
+    margin: 0;
     color: var(--accent-color);
-    text-shadow: 0 2px 4px var(--shadow-color);
 }
 
 .service-price {
-    font-size: 14px;
+    font-size: 12px;
     color: #a0a0a0;
-    margin-top: 0;
-    margin-bottom: 15px;
+    margin: 0;
 }
 
 .user-list {
     display: flex;
     flex-direction: column;
-    gap: 15px;
+    gap: 8px;
 }
 
 .user-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 10px;
     background: #2a2a2a;
-    border-radius: calc(var(--border-radius) - 4px);
-    padding: 15px;
-    box-shadow: 0 4px 8px var(--shadow-color),
-                inset 0 1px 1px rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.03);
+    border-radius: 6px;
     transition: transform 0.2s;
 }
 
 .user-card:hover {
-    transform: translateY(-2px);
+    transform: translateY(-1px);
 }
 
 .user-info {
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    margin-bottom: 10px;
+    gap: 8px;
+    flex-wrap: wrap;
 }
 
 .user-name {
     font-weight: 500;
-    font-size: 16px;
+    font-size: 13px;
 }
 
 .telegram-link {
     color: #0088cc;
     text-decoration: none;
-    font-size: 14px;
+    font-size: 11px;
     background: rgba(0, 136, 204, 0.1);
-    padding: 3px 8px;
+    padding: 2px 6px;
     border-radius: 4px;
-    transition: background 0.2s;
-}
-
-.telegram-link:hover {
-    background: rgba(0, 136, 204, 0.2);
 }
 
 .subscription-info {
     display: flex;
-    justify-content: space-between;
-    font-size: 14px;
-    color: #a0a0a0;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 2px;
+    text-align: right;
 }
 
 .payment-date {
-    font-style: italic;
+    font-size: 11px;
+    color: #a0a0a0;
 }
 
 .time-left {
+    font-size: 12px;
     font-weight: 500;
+    white-space: nowrap;
 }
 
 .footer {
     text-align: center;
-    padding: 20px;
-    font-size: 14px;
+    padding: 15px 0;
+    font-size: 13px;
     color: #a0a0a0;
+    margin-top: 20px;
 }
 
 .telegram-group-link {
-    display: inline-block;
-    margin: 10px 0;
     color: var(--accent-color);
     text-decoration: none;
-    font-weight: 500;
-    padding: 5px 10px;
-    border-radius: 4px;
-    background: rgba(58, 123, 213, 0.1);
-    transition: background 0.2s;
-}
-
-.telegram-group-link:hover {
-    background: rgba(58, 123, 213, 0.2);
+    margin-bottom: 10px;
+    display: inline-block;
+    font-size: 13px;
 }
 
 .requisites {
-    margin-top: 15px;
-    font-size: 13px;
+    margin-top: 10px;
+    font-size: 12px;
     line-height: 1.5;
 }
 
 @media (max-width: 480px) {
-    .user-info, .subscription-info {
+    .container {
+        padding: 10px;
+    }
+    
+    .user-card {
         flex-direction: column;
         align-items: flex-start;
         gap: 5px;
+        padding: 10px;
     }
     
-    .telegram-link {
-        align-self: flex-end;
+    .subscription-info {
+        align-items: flex-start;
+        width: 100%;
+        text-align: left;
+    }
+    
+    .service-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 5px;
     }
 }
