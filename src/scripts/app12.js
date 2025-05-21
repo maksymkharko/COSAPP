@@ -1,41 +1,43 @@
-// НАСТРОЙКИ ПОДПИСКИ
-const subscription = {
-  названиеСервиса: "YouTube Premium (семейная)",
-  логотип: "🎬",
-  доКакогоЧислаОплачено: "2025-06-15", // формат: ГГГГ-ММ-ДД
-  пользователи: [
-    { имя: "Максим", телега: "@maks_kharko", сумма: 10 },
-    { имя: "Катя", телега: "@katya_v", сумма: 10 },
-    { имя: "Марина", телега: "@marina23", сумма: 10 },
-    { имя: "Женя", телега: "@zhenyaX", сумма: 10 },
-    { имя: "Али", телега: "@ali04", сумма: 10 }
-  ]
-};
-
-// ФУНКЦИИ
-function отобразитьПриложение() {
-  document.getElementById("serviceName").textContent = subscription.названиеСервиса;
-  document.getElementById("logo").textContent = subscription.логотип;
-
-  const отсчет = document.getElementById("countdown");
-  const дата = new Date(subscription.доКакогоЧислаОплачено);
-  const сейчас = new Date();
-  const разница = дата - сейчас;
-  const осталосьДней = Math.max(Math.ceil(разница / (1000 * 60 * 60 * 24)), 0);
-
-  отсчет.textContent = `Оплачено до ${дата.toLocaleDateString('ru-RU')} (осталось ${осталосьДней} дней)`;
-
-  const список = document.getElementById("usersList");
-  список.innerHTML = "";
-  subscription.пользователи.forEach(п => {
-    const li = document.createElement("li");
-    li.innerHTML = `👤 <strong>${п.имя}</strong> — <a href="https://t.me/${п.телега.replace('@', '')}" target="_blank">${п.телега}</a> — 💰 ${п.сумма} zł`;
-    список.appendChild(li);
-  });
-}
-
-function goBack() {
-  window.location.href = "index.html";
-}
-
-document.addEventListener("DOMContentLoaded", отобразитьПриложение);
+document.addEventListener('DOMContentLoaded', function() {
+    // Обновляем таймеры для всех подписок
+    function updateTimers() {
+        const timeElements = document.querySelectorAll('.time-left');
+        const now = new Date();
+        
+        timeElements.forEach(element => {
+            const endDate = new Date(element.getAttribute('data-end'));
+            const diff = endDate - now;
+            
+            if (diff <= 0) {
+                element.textContent = 'Подписка истекла!';
+                element.style.color = '#ff5555';
+                return;
+            }
+            
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            
+            if (days > 0) {
+                element.textContent = `Осталось: ${days} дн. ${hours} ч.`;
+            } else {
+                element.textContent = `Осталось: ${hours} часов`;
+                element.style.color = '#ffaa00';
+            }
+        });
+    }
+    
+    // Обновляем таймеры сразу и каждую минуту
+    updateTimers();
+    setInterval(updateTimers, 60000);
+    
+    // Регистрация Service Worker для PWA
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('sw.js').then(registration => {
+                console.log('ServiceWorker registration successful');
+            }).catch(err => {
+                console.log('ServiceWorker registration failed: ', err);
+            });
+        });
+    }
+});
