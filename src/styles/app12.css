@@ -5,6 +5,8 @@
     --accent-color: #3a7bd5;
     --shadow-color: rgba(0, 0, 0, 0.5);
     --border-radius: 12px;
+    --warning-color: #ffaa00;
+    --danger-color: #ff5555;
 }
 
 body {
@@ -67,9 +69,16 @@ body {
 .service-title {
     font-size: 20px;
     margin-top: 0;
-    margin-bottom: 15px;
+    margin-bottom: 5px;
     color: var(--accent-color);
     text-shadow: 0 2px 4px var(--shadow-color);
+}
+
+.service-price {
+    font-size: 14px;
+    color: #a0a0a0;
+    margin-top: 0;
+    margin-bottom: 15px;
 }
 
 .user-list {
@@ -131,7 +140,6 @@ body {
 
 .time-left {
     font-weight: 500;
-    color: var(--accent-color);
 }
 
 .footer {
